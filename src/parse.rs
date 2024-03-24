@@ -39,8 +39,8 @@ pub(crate) async fn parse_block(
     Ok(())
 }
 
-// TODO: TEST with irrelevant divs inserted and just pages with entries
 // FIXME:
+// TODO: TEST with irrelevant divs inserted and just pages with entries
 async fn parse_html(html: Arc<String>) -> Result<Vec<(String, String)>> {
     let words_vec = spawn_blocking({
         let html = html.clone();
@@ -48,36 +48,30 @@ async fn parse_html(html: Arc<String>) -> Result<Vec<(String, String)>> {
             let doc = Html::parse_document(&html);
 
             // TODO: HANDLE ERROR:
-            let entry_selector = Selector::parse(r#"div[class="list-group-item entry"]"#).unwrap();
+            let entry_selector = Selector::parse(r#"div[class="entry"]"#).unwrap();
             let entry_divs = doc.select(&entry_selector);
 
             // There shouldn't be more than 30 entries per page.
             let mut words_vec = Vec::with_capacity(30);
             for entry_div in entry_divs {
-                let span_selector = Selector::parse("span").unwrap();
-                let anchor_selector = Selector::parse("a").unwrap();
+                // TODO: HANDLE ERROR:
+                let token_selector = Selector::parse(r#"div[class="token"]"#).unwrap();
+                let qual_selector = Selector::parse(r#"div[class="qual"]"#).unwrap();
 
                 let div = Html::parse_fragment(&entry_div.html());
 
                 let token = div
-                    .select(&anchor_selector)
+                    .select(&token_selector)
                     .next()
-                    .expect("Entry didn't contain an anchor")
+                    .expect("Entry didn't contain a token")
                     .inner_html();
 
-                // TODO: HANDLE ERROR:
-                let qualifier_selector =
-                    Selector::parse(r#"span[data-group="header qualifier"]"#).unwrap();
                 let mut qual_text = String::new();
-                if let Some(qualifier) = div.select(&qualifier_selector).next() {
-                    qual_text = Html::parse_fragment(&qualifier.inner_html())
-                        .select(&span_selector)
-                        .next()
-                        .expect("Qualifier span didn't contain another span!")
-                        .inner_html();
+                if let Some(qualifier) = div.select(&qual_selector).next() {
+                    qual_text = qualifier.inner_html();
                 }
 
-                let word_entry = format!("{token:<20}{qual_text:<20}\n");
+                let word_entry = format!("{token:<20} | {qual_text:>20}\n");
                 words_vec.push((fmt_sortable_entry(&token), word_entry));
             }
             words_vec
@@ -99,4 +93,5 @@ fn fmt_sortable_entry(token: &str) -> String {
         .replace(['ú', 'ù', 'û', 'ü'], "u")
         .replace(['ý', 'ÿ'], "y")
         .replace(['ñ'], "n")
+        .replace(['ŕ'], "r")
 }

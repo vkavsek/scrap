@@ -5,10 +5,9 @@ use chrono::Local;
 use reqwest::Client;
 use tokio::{fs::File, io::AsyncWriteExt, sync::mpsc};
 
-use crate::{info_time, BLOCK_RANGE_LIMIT, EXPECTED_NUM_OF_ENTRIES, FILE_PATH};
-
 use crate::parse::parse_block;
 use crate::request::request_block;
+use crate::{info_time, BLOCK_RANGE_LIMIT, EXPECTED_NUM_OF_ENTRIES, FILE_PATH};
 
 pub async fn process_site() -> Result<()> {
     let start_time = Local::now();

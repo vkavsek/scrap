@@ -20,12 +20,11 @@ pub(crate) async fn request_block(block_num: usize, client: Client) -> JoinSet<R
     task_set
 }
 
+// FIXME:
 async fn request_page_html(client: Client, page_num: usize) -> Result<String> {
     // TODO: Errors ?
     let res = client
-        .get(format!(
-            "https://fran.si/iskanje?page={page_num}&FilteredDictionaryIds=133&View=1&Query=*"
-        ))
+        .get(format!("http://127.0.0.1:3000/{page_num}"))
         .send()
         .await
         .unwrap();
