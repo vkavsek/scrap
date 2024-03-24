@@ -66,12 +66,14 @@ async fn parse_html(html: Arc<String>) -> Result<Vec<(String, String)>> {
                     .expect("Entry didn't contain a token")
                     .inner_html();
 
-                let mut qual_text = String::new();
+                let word_entry;
                 if let Some(qualifier) = div.select(&qual_selector).next() {
-                    qual_text = qualifier.inner_html();
+                    let qual_text = qualifier.inner_html();
+                    word_entry = format!("{:<20} | {:<20}\n", token.trim(), qual_text.trim());
+                } else {
+                    word_entry = format!("{}\n", token.trim());
                 }
 
-                let word_entry = format!("{token:<20} | {qual_text:>20}\n");
                 words_vec.push((fmt_sortable_entry(&token), word_entry));
             }
             words_vec
