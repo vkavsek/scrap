@@ -1,6 +1,5 @@
-use anyhow::Result;
 use chrono::Local;
-use scrap::{info_time, process::process_site};
+use scrap::{info_time, process::process_site, Result};
 
 #[tokio::main]
 async fn main() -> Result<()> {

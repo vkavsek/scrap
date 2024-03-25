@@ -1,13 +1,15 @@
-use anyhow::Result;
 use chrono::Local;
 use reqwest::Client;
 use tokio::task::JoinSet;
 
-use crate::{info_time, PAGES_PER_BLOCK, START_PAGE};
+use crate::{info_time, Result, PAGES_PER_BLOCK, START_PAGE};
 
+/// Returns a `JoinSet` of all the page requests in a block, so that they can be awaited.
 pub(crate) async fn request_block(block_num: usize, client: Client) -> JoinSet<Result<String>> {
     info_time!("Requesting block: {block_num}");
+
     let mut task_set = JoinSet::new();
+
     let real_page_num = block_num * PAGES_PER_BLOCK + START_PAGE;
     for page_num in real_page_num..real_page_num + PAGES_PER_BLOCK {
         task_set.spawn({
@@ -20,14 +22,12 @@ pub(crate) async fn request_block(block_num: usize, client: Client) -> JoinSet<R
     task_set
 }
 
-// FIXME:
+/// Requests a page and returns a `Result<String>` containing the HTML.
 async fn request_page_html(client: Client, page_num: usize) -> Result<String> {
-    // TODO: Errors ?
     let res = client
         .get(format!("http://127.0.0.1:3000/{page_num}"))
         .send()
-        .await
-        .unwrap();
-    let html = res.text().await.unwrap();
+        .await?;
+    let html = res.text().await?;
     Ok(html)
 }

@@ -1,9 +1,12 @@
 //! Scraper
 
+mod error;
 mod macros;
 mod parse;
 pub mod process;
 mod request;
+
+pub use self::error::{Error, Result};
 
 const PAGES_PER_BLOCK: usize = 100;
 const START_PAGE: usize = 1;
@@ -13,7 +16,5 @@ const BLOCK_RANGE_LIMIT: usize = 0;
 const EXPECTED_NUM_OF_ENTRIES: usize = 97669;
 
 // TODO:
-//  -   Split into logical modules
-//  -   Document
 //  -   Try figuring out how to deal with empty pages.
 //  -   Test

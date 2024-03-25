@@ -6,8 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = "1"
 reqwest = "0.12"
 scraper = "0.19"
 tokio = { version = "1.36", features = ["full"] }
 chrono = "0.4"
+thiserror = "1"
